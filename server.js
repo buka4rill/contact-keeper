@@ -1,10 +1,16 @@
 // Entry point to the backend
 
 const express = require('express');
+const connectDB = require('./config/db');
 
+// Connect Database
+connectDB();
 
-// initialise express
+// Initialise express
 const app = express();
+
+// Init Middleware
+app.use(express.json({ extended: false }));
 
 // Add route and send data
 app.get('/', (req, res) => res.json({ msg: 'Welcome to the ContactKepper API' }));
