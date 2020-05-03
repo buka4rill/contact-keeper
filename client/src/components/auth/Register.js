@@ -1,11 +1,33 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import AlertContext from '../../context/alert/alertContext';
+import AuthContext from '../../context/auth/authContext';
 
 
-const Register = () => {
+const Register = (props) => {
     const alertContext = useContext(AlertContext);
+    const authContext = useContext(AuthContext);
 
     const { setAlert } = alertContext;
+    const { register, error, clearErrors, isAuthenticated } = authContext;
+
+    useEffect(() => {
+        // redirect page to home if user is authenticated
+        if (isAuthenticated) {
+            // To redirect in React
+            props.history.push('/');
+        }
+
+        if(error === 'User already exists') {
+            // Put error from server to the UI
+            setAlert(error, 'danger');
+
+            // clearErrors
+            clearErrors();
+        }
+
+        // eslint-disable-next-line
+    }, [error, isAuthenticated, props.history]); // Should run when error is added to state or when it changes
+
 
     const [user, setUser] = useState({
         name: '',
@@ -13,6 +35,7 @@ const Register = () => {
         password: '',
         password2: ''
     });
+
 
     const { name, email, password, password2 } = user;
 
@@ -24,10 +47,16 @@ const Register = () => {
         // Validation
         if (name === '' || email === '' || password === '') {
             setAlert('Please enter all fields', 'danger');
-        } else if (password != password2) {
+        } else if (password !== password2) {
             setAlert('Passwords do not match', 'danger');
         } else {
-            console.log('Register submit');
+            // console.log('Register submit');
+            // Call register function with formData
+            register({
+                name,
+                email,
+                password,
+            });
         }
     }
 
